@@ -1,0 +1,95 @@
+<html>
+
+<head>
+    <title>Login to ARJS</title>
+    <link rel="stylesheet" href="https://bootswatch.com/4/materia/bootstrap.min.css">
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3">
+
+            </div>
+            <div class="col-md-6">
+                <div class="card text-white bg-secondary mb-3" style="max-width: 100%;">
+                    <div class="card-header">Login Now!</div>
+                    <div class="card-body">
+                        <button type="button" onclick="loginWithGoogle()" class="btn btn-primary">Login with
+                            Google</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+
+            </div>
+        </div>
+    </div>
+    <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/6.2.4/firebase-app.js"></script>
+
+    <!-- Add Firebase products that you want to use -->
+    <script src="https://www.gstatic.com/firebasejs/6.2.4/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/6.2.4/firebase-database.js"></script>
+    <script>
+        // Your web app's Firebase configuration
+        var firebaseConfig = {
+            apiKey: "AIzaSyDuv80jNYlXEks2fgy47qgM9dEYYcbYn9g",
+            authDomain: "ar-app-5a080.firebaseapp.com",
+            databaseURL: "https://ar-app-5a080.firebaseio.com",
+            projectId: "ar-app-5a080",
+            storageBucket: "ar-app-5a080.appspot.com",
+            messagingSenderId: "118097952955",
+            appId: "1:118097952955:web:71f0635c7da97320"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        //connect to firebase 
+
+        function loginWithGoogle() {
+
+            var provider = new firebase.auth.GoogleAuthProvider();
+            var database = firebase.database();
+
+            firebase.auth().signInWithPopup(provider).then(function (result) {
+                // This gives you a Google Access Token. You can use it to access the Google API.
+                var token = result.credential.accessToken;
+                // The signed-in user info.
+                var user = result.user;
+
+                firebase.database().ref('users/' + result.user.uid + "/UserData").set({
+                    username: result.user.displayName,
+                    email: result.user.email,
+                    profile_picture: result.user.photoURL
+                });
+
+                console.log(result.user);
+                localStorage.setItem("userid",result.user.uid)
+                localStorage.setItem("user", JSON.stringify(result))
+
+
+
+                if (localStorage.getItem("user") !== null) {
+                    window.location.replace("https://ar-app-5a080.firebaseapp.com/home.html");
+                } else {
+                    window.location.replace("https://ar-app-5a080.firebaseapp.com");
+                }
+
+                // ...
+            }).catch(function (error) {
+                // Handle Errors here.
+                var errorCode = error.code;
+                var errorMessage = error.message;
+                // The email of the user's account used.
+                var email = error.email;
+                // The firebase.auth.AuthCredential type that was used.
+                var credential = error.credential;
+                // ...
+            });
+        }
+
+    </script>
+</body>
+
+</html>
